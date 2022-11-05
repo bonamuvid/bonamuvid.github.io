@@ -1,17 +1,37 @@
 <!DOCTYPE html>
 <html>
-<meta http-equiv='cache-control' content='no-cache'> 
-<meta http-equiv='expires' content='0'> 
-<meta http-equiv='pragma' content='no-cache'>
 <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv='cache-control' content='no-cache'> 
+	<meta http-equiv='expires' content='0'> 
+	<meta http-equiv='pragma' content='no-cache'>
+	<meta name="description" content="Bona Muvid's playground for experimenting with static web pages">
+	<meta name="title" content="Bona Muvid's Page">
 	<title>Bona Muvid's Page</title>
 	<style>
 		body {
 			background-color: #152238;
 		}
-		div.mainwrapper {
-			background-color: #D2E1E6;
-			height: 100vh;
+		.mainwrapper {
+			position: fixed;
+			background-color: #9EA3A9;
+			height: 94%;
+			width: 97%;
+			top: 1.5%;
+			left: 0.5%;
+			padding: 1%;
+		}
+		.ribbon {
+			position: relative;
+			left: 50%;
+			right: 50%;
+			margin-left: -50vw;
+			margin-right: -50vw;
+			background-color: #000000;
+			text-align: center;
+			padding: 25px 0 75px 0;
+			color: #fff;
 			width: 100vw;
 		}
 	</style>
@@ -19,7 +39,10 @@
 <body>
 <div class="mainwrapper">
 	<h1> First Headings</h1>
-	Blank space
+	<hr/>
+	<div class="ribbon">
+	Content of the ribbon
+	</div>
 </div>
 </body>
 </html>
