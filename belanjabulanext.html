@@ -12,10 +12,7 @@
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="custom.css">
 	<script type="text/javascript">
-		function addItem() {
-			var x = document.getElementById("daftar").value;
-			document.getElementById("barang").innerHTML = x;
-		}
+		var jmlBarang = 0;
 	</script>
 </head>
 <body>
@@ -28,11 +25,13 @@
 				<button class="btn btn-outline-secondary" id="tambahkan" onclick="addItem()" style="margin: 5px;">Tambahkan</button>
 			</div>
 		</div>
-		<div id="keranjang">
-			<p id="barang"></p>
+		<div>
+			<ul id="keranjang">
+				<li id="barang0"></li>
+			</ul>
 		</div>
 	</div>
-
+	<!-- Next > save the list to .txt or .xml file -->
 	<script type="text/javascript">
 		var input = document.getElementById("daftar");
 		input.addEventListener("keypress", function(event) {
@@ -41,6 +40,22 @@
 				document.getElementById("tambahkan").click();
 			}
 		});
+
+		function addItem() {
+			var x = document.getElementById("daftar").value;
+			var isi = document.getElementById("barang"+jmlBarang);
+			if (isi != null) {
+				document.getElementById("barang"+jmlBarang).innerHTML = x;
+				jmlBarang = jmlBarang + 1;	
+			} else {
+				var ul = document.getElementById("keranjang");
+				var li = document.createElement("li");
+				li.appendChild(document.createTextNode(x));
+				li.setAttribute("id","barang"+jmlBarang);
+				ul.appendChild(li);
+				jmlBarang = jmlBarang + 1;
+			}
+		}
 	</script>
 </body>
 </html>
