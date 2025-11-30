@@ -6,33 +6,60 @@
   <title>Login</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   
-  <script>
-  async function sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, "0")).join('');
-  }
-  
-  const storedHash = "b88ca91d70377891dec3803a5206b0e19cedd0934718ddcf8c2b4a53307cc431";
-  
-  async function login() {
-      const pass = document.getElementById("password").value;
-      const hashed = await sha256(pass);
-  
-      if (hashed === storedHash) {
-          sessionStorage.setItem("auth", "1");
-          window.location.href = "belanjabulanext.html";
-      } else {
-          alert("Wrong password");
-      }
-  }
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDwMCTIK38vlLLAHByz0MRWz4FgeXhMh6g",
+        authDomain: "github-belanja-bulanext.firebaseapp.com",
+        databaseURL: "https://github-belanja-bulanext-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "github-belanja-bulanext",
+        storageBucket: "github-belanja-bulanext.firebasestorage.app",
+        messagingSenderId: "718219974978",
+        appId: "1:718219974978:web:30505728a4806d857d10db"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    
+    const storedHash = "b88ca91d70377891dec3803a5206b0e19cedd0934718ddcf8c2b4a53307cc431";
+    
+    function generateToken() {
+        return crypto.randomUUID();
+    }
+    
+    async function login() {
+        const input = document.getElementById("password").value;
+        const hashed = await sha256(input);
+    
+        if (hashed === storedHash) {
+            const token = generateToken();
+    
+            await set(ref(db, "auth/" + token), true);
+
+            sessionStorage.setItem("authToken", token);
+    
+            window.location.href = "belanjabulanext.html";
+        } else {
+            alert("Wrong password!");
+        }
+    }
+    
+    window.login = login;
   </script>
 </head>
 <body class="p-4">
     <div class="container">
         <h2>Enter Password</h2>
-        <input type="password" id="password" class="form-control" placeholder="Password" autofocus>
+        <input type="password" id="password" class="form-control" placeholder="Password">
         <button onclick="login()" class="btn btn-primary mt-3">Login</button>
     </div>
 </body>
