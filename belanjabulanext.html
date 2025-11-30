@@ -11,8 +11,56 @@
 	<title>Belanja Bulanext | Bona Muvid's Page</title>
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="custom.css">
-	<script type="text/javascript">
-		var jmlBarang = 0;
+
+	<script type="module">
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+		import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+		// --- Your Firebase Config (replace with your own!) ---
+		const firebaseConfig = {
+			apiKey: "AIzaSyDwMCTIK38vlLLAHByz0MRWz4FgeXhMh6g",
+			authDomain: "github-belanja-bulanext.firebaseapp.com",
+			databaseURL: "https://github-belanja-bulanext-default-rtdb.asia-southeast1.firebasedatabase.app/",
+			projectId: "github-belanja-bulanext",
+			storageBucket: "github-belanja-bulanext.firebasestorage.app",
+			messagingSenderId: "718219974978",
+			appId: "1:718219974978:web:30505728a4806d857d10db"
+		};
+
+		const app = initializeApp(firebaseConfig);
+		const db = getDatabase(app);
+
+		let itemsRef = ref(db, "shoppingList");
+
+		onValue(itemsRef, (snapshot) => {
+			let ul = document.getElementById("keranjang");
+			ul.innerHTML = "";
+
+			snapshot.forEach((child) => {
+				let li = document.createElement("li");
+				li.textContent = child.val().name;
+				ul.appendChild(li);
+			});
+		});
+
+		window.addItem = function () {
+			let input = document.getElementById("daftar");
+			let text = input.value.trim();
+			if (text === "") return;
+
+			push(itemsRef, { name: text });
+			input.value = "";
+		};
+
+		window.onload = function () {
+			let input = document.getElementById("daftar");
+			input.addEventListener("keypress", function(event) {
+				if (event.key === "Enter") {
+					event.preventDefault();
+					addItem();
+				}
+			});
+		};
 	</script>
 </head>
 <body>
@@ -20,42 +68,14 @@
 		<h1>Belanja Bulanext</h1>
 		<hr/>
 		<div class="input-group mb-3">
-			<input class="form-control" type="text" name="List Belanja" id="daftar" placeholder="Nama Barang" onclick="this.select()" style="margin: 5px;" >
+			<input class="form-control" type="text" id="daftar" placeholder="Nama Barang" onclick="this.select()" style="margin: 5px;">
 			<div class="input-group-append">
 				<button class="btn btn-outline-secondary" id="tambahkan" onclick="addItem()" style="margin: 5px;">Tambahkan</button>
 			</div>
 		</div>
 		<div>
-			<ul id="keranjang">
-				<li id="barang0"></li>
-			</ul>
+			<ul id="keranjang"></ul>
 		</div>
 	</div>
-	<!-- Next > save the list to .txt or .xml file -->
-	<script type="text/javascript">
-		var input = document.getElementById("daftar");
-		input.addEventListener("keypress", function(event) {
-			if (event.key === "Enter") {
-				event.preventDefault();
-				document.getElementById("tambahkan").click();
-			}
-		});
-
-		function addItem() {
-			var x = document.getElementById("daftar").value;
-			var isi = document.getElementById("barang"+jmlBarang);
-			if (isi != null) {
-				document.getElementById("barang"+jmlBarang).innerHTML = x;
-				jmlBarang = jmlBarang + 1;	
-			} else {
-				var ul = document.getElementById("keranjang");
-				var li = document.createElement("li");
-				li.appendChild(document.createTextNode(x));
-				li.setAttribute("id","barang"+jmlBarang);
-				ul.appendChild(li);
-				jmlBarang = jmlBarang + 1;
-			}
-		}
-	</script>
 </body>
 </html>
