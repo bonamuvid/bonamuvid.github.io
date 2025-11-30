@@ -3,8 +3,8 @@
 <head>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, child, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+    import { getDatabase, ref, get, child, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  
     const firebaseConfig = {
       apiKey: "AIzaSyDwMCTIK38vlLLAHByz0MRWz4FgeXhMh6g",
       authDomain: "github-belanja-bulanext.firebaseapp.com",
@@ -14,10 +14,10 @@
       messagingSenderId: "718219974978",
       appId: "1:718219974978:web:30505728a4806d857d10db"
     };
-
+  
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
+  
     async function checkAuth() {
       const token = sessionStorage.getItem("authToken");
       if (!token) {
@@ -36,21 +36,69 @@
         window.location.href = "login.html";
       }
     }
-
+  
     await checkAuth();
-
+  
     const itemsRef = ref(db, "shoppingList");
-
+  
     onValue(itemsRef, (snapshot) => {
       const ul = document.getElementById("keranjang");
       ul.innerHTML = "";
-      snapshot.forEach((child) => {
+      snapshot.forEach((childSnapshot) => {
         const li = document.createElement("li");
-        li.textContent = child.val().name;
+        li.textContent = childSnapshot.val().name;
+        li.style.position = "relative";
+        li.style.padding = "8px 12px";
+        li.style.userSelect = "none";
+  
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "X";
+        deleteBtn.className = "btn btn-sm btn-danger";
+        deleteBtn.style.position = "absolute";
+        deleteBtn.style.right = "10px";
+        deleteBtn.style.top = "50%";
+        deleteBtn.style.transform = "translateY(-50%)";
+        deleteBtn.onclick = () => remove(ref(db, "shoppingList/" + childSnapshot.key));
+        li.appendChild(deleteBtn);
+  
+        let startX = 0;
+        let currentX = 0;
+        let dragging = false;
+  
+        function startDrag(e) {
+          dragging = true;
+          startX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+          li.style.transition = "";
+        }
+  
+        function dragMove(e) {
+          if (!dragging) return;
+          currentX = e.type.includes("touch") ? e.touches[0].clientX : e.clientX;
+          const dx = currentX - startX;
+          li.style.transform = `translateX(${dx}px)`;
+        }
+  
+        function endDrag() {
+          if (!dragging) return;
+          dragging = false;
+          const dx = currentX - startX;
+          if (Math.abs(dx) > 100) remove(ref(db, "shoppingList/" + childSnapshot.key));
+          else li.style.transition = "transform 0.2s";
+          li.style.transform = "translateX(0)";
+        }
+  
+        li.addEventListener("mousedown", startDrag);
+        li.addEventListener("mousemove", dragMove);
+        li.addEventListener("mouseup", endDrag);
+        li.addEventListener("mouseleave", endDrag);
+        li.addEventListener("touchstart", startDrag);
+        li.addEventListener("touchmove", dragMove);
+        li.addEventListener("touchend", endDrag);
+  
         ul.appendChild(li);
       });
     });
-
+  
     window.addItem = function() {
       const input = document.getElementById("daftar");
       const text = input.value.trim();
@@ -58,7 +106,7 @@
       push(itemsRef, { name: text });
       input.value = "";
     };
-
+  
     window.onload = function() {
       const input = document.getElementById("daftar");
       input.addEventListener("keypress", function(event) {
