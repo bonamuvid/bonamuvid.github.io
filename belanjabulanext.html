@@ -107,15 +107,13 @@
       input.value = "";
     };
   
-    window.onload = function() {
-      const input = document.getElementById("daftar");
-      input.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          addItem();
-        }
-      });
-    };
+    const input = document.getElementById("daftar");
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addItem();
+      }
+    });
   </script>
 
   <meta charset="utf-8">
