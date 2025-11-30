@@ -42,8 +42,12 @@
     
         if (hashed === storedHash) {
             const token = generateToken();
-    
-            await set(ref(db, "auth/" + token), true);
+
+            const now = Date.now();
+
+            await set(ref(db, "auth/" + token), {
+                createdAt: now
+            });
 
             sessionStorage.setItem("authToken", token);
     
