@@ -11,12 +11,39 @@
 	<title>Belanja Bulanext | Bona Muvid's Page</title>
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="custom.css">
-
+	<script>
+		async function sha256(message) {
+		    const msgBuffer = new TextEncoder().encode(message);
+		    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+		    const hashArray = Array.from(new Uint8Array(hashBuffer));
+		    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+		}
+		
+		const storedHash = "b88ca91d70377891dec3803a5206b0e19cedd0934718ddcf8c2b4a53307cc431";
+		
+		async function checkPassword() {
+		    let input = sessionStorage.getItem("pagePassword");
+		
+		    if (!input) input = prompt("Enter password:");
+		
+		    if (input) {
+		        const hashed = await sha256(input);
+		        if (hashed === storedHash) {
+		            sessionStorage.setItem("pagePassword", input);
+		            return;
+		        }
+		    }
+		
+		    document.body.innerHTML = "<h1>Access Denied</h1>";
+		    throw new Error("Denied");
+		}
+		
+		await checkPassword();
+	</script>
 	<script type="module">
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 		import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-		// --- Your Firebase Config (replace with your own!) ---
 		const firebaseConfig = {
 			apiKey: "AIzaSyDwMCTIK38vlLLAHByz0MRWz4FgeXhMh6g",
 			authDomain: "github-belanja-bulanext.firebaseapp.com",
